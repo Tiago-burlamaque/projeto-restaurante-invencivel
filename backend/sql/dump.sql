@@ -1,5 +1,7 @@
 CREATE SCHEMA `inciveldelivery` ;
 
+USE `inciveldelivery` ;
+
 CREATE TABLE `inciveldelivery`.`usuario` (
   `idusuario` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(225) NULL,

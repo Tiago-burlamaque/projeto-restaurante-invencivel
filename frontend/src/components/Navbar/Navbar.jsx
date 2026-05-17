@@ -4,10 +4,14 @@ import { useEffect, useState } from 'react'
 import { FaUser } from "react-icons/fa";
 import { IoIosClose } from "react-icons/io";
 import { useNavigate, useParams } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function Navbar() {
 
     const [dados, setDados] = useState([])
+
+    const [isVisible, setIsVisible] = useState(true)
+
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const usuario = JSON.parse(localStorage.getItem("usuario"))
@@ -27,9 +31,7 @@ function Navbar() {
 
             // transforma em array caso venha objeto
             setDados(
-                Array.isArray(response.data)
-                    ? response.data
-                    : [response.data]
+               response.data ? (Array.isArray(response.data) ? response.data : [response.data]) : []
             )
 
         } catch (error) {
@@ -79,28 +81,36 @@ function Navbar() {
             </div>
 
             {isModalOpen && (
-                <section className='fixed inset-0 bg-[rgba(0,0,0,0.5)] flex justify-center items-center'>
-                    <div className='bg-blue-500 min-h-[30rem]  rounded-[10px] min-w-[20rem] p-[2rem]'>
-                        <header className='w-full h-30  items-center justify-center flex border-b-2'>
-                            <IoIosClose className='fixed top-32 right-137 cursor-pointer shadow bg-linear-65 hover:to-red-500 hover:from-red-950 transition duration-300 ease-in-out hover:scale-105 rounded-full text-4xl' onClick={() => setIsModalOpen(false)} />
-                            <h1 className='text-4xl'>Informações</h1>
-                        </header>
-                        {dados.map((dado) => (
-                            <main
-                                key={dado.idusuario}
-                                className='w-full h-50 items-center justify-center flex-col flex text-2xl'
-                            >
-                                <h1>Nome: {dado.nome}</h1>
-                                <h1>Email: {dado.email}</h1>
-                                <h1>Telefone: {dado.telefone}</h1>
+                <div className='flex flex-col w-full absolute top-0 left-0 items-center justify-center bg-linear-to-bl from-neutral-600 via-black to-neutral-600  h-screen'>
+                    <AnimatePresence initial={true}>
+
+                        <motion.section
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className='backdrop-blur-md w-100 h-150  rounded-[10px] absolute right-111 p-5'
+                            key="box"
+                        >
+
+                            <IoIosClose className='absolute top-2 right-2 cursor-pointer text-5xl  hover:text-red-500 hover:scale-105 transition-all duration-200' onClick={() => setIsModalOpen(false)} />
+
+                            <header>
+                                <h1 className='w-full h-30 items-center flex justify-center text-5xl text-shadow-lg text-shadow-black'>Sua conta</h1>
+                            </header>
+                            <main className='h-100  w-full'>
+                                {dados.map((dado) => (
+                                    <div key={dado.idusuario} className='flex flex-col items-center justify-center gap-4 mt-10'>
+                                        <p className='text-2xl'><span className='text-shadow-lg text-shadow-black'>Nome:</span> {dado?.nome}</p>
+                                        <p className='text-2xl'><span className='text-shadow-lg text-shadow-black'>Email:</span> {dado.email}</p>
+                                        <p className='text-2xl'><span className='text-shadow-lg text-shadow-black'>Telefone:</span> {dado.telefone}</p>
+                                        <p className='text-2xl'><span className='text-shadow-lg text-shadow-black'>CPF:</span> {dado.cpf}</p>
+                                        <button className='bg-gradient-to-r w-full from-red-500 to-white hover:from-white hover:to-red-500 transition rounded-2xl px-4 py-2 text-white duration-400 cursor-pointer text-2xl' onClick={handleLogout}>Sair da conta</button>
+                                        <button className='bg-gradient-to-r w-full from-blue-500 to-white hover:from-white hover:to-blue-500 transition rounded-2xl px-4 py-2 text-white duration-400 cursor-pointer text-2xl' onClick={handleEdit}>Editar dados</button>
+                                    </div>
+                                ))}
                             </main>
-                        ))}
-                        <footer className='w-full h-40 flex flex-col gap-4'>
-                            <button className='p-2 rounded text-2xl shadow shadow-2xl cursor-pointer bg-blue-600 hover:bg-blue-950 transition duration-300 ease-in-out hover:scale-105' onClick={handleEdit}>Editar</button>
-                            <button className='p-2 rounded text-2xl shadow shadow-2xl cursor-pointer bg-red-600 hover:bg-red-950 transition duration-300 ease-in-out hover:scale-105' onClick={handleLogout}>Logout</button>
-                        </footer>
-                    </div>
-                </section>
+                        </motion.section>
+                    </AnimatePresence>
+                </div>
             )}
         </div>
     )
